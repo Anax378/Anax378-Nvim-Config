@@ -71,10 +71,17 @@ require("ibl").setup({
 require("toggleterm").setup{};
 
 local lsp_zero = require("lsp-zero")
-
 lsp_zero.on_attach(function(client, bufnr)
 	lsp_zero.default_keymaps({buffer = bufnr})
 end)
+
+lsp_zero.configure("hls", {
+	cmd = {"haskell-language-server-wrapper", "--lsp"},
+	filetypes={"haskell", "lhaskell"},
+	root_dir = require("lspconfig.util").root_pattern("*.hs", "*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml", ".git")
+});
+
+lsp_zero.setup()
 
 require("mason").setup({})
 require("mason-lspconfig").setup({
@@ -129,7 +136,7 @@ cmp.setup({
 
 vim.opt.termguicolors = true
 vim.cmd.colorscheme('melange')
-vim.api.nvim_exec('language en_US', true)
+vim.api.nvim_exec('language en_US.utf8', true)
 
 function setExpandtab()
 	if vim.bo.filetype == "haskell" or vim.bo.filetype == "cabal" then
@@ -139,11 +146,28 @@ function setExpandtab()
 	end
 end
 
+local function setup_python_highlighting()
+	vim.cmd("syntax enable")
+
+    vim.cmd([[highlight PythonMember guifg=#744fc6]])
+	vim.cmd([[syntax match pythonMember "\.\w\+" ]])
+	vim.cmd([[highlight link pythonMember PythonMember]])
+
+	vim.cmd([[highlight PythonSelf guifg=#379392]])
+	vim.cmd([[syntax match pythonSelf /\<self\>/]])
+	vim.cmd([[highlight link pythonSelf PythonSelf]])
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "python",
+	callback = setup_python_highlighting,
+})
+
 
 vim.cmd(
 [[
 set list
-set listchars=tab:>-
+set listchars=tab:>\ 
 augroup SetExpandTab
 	autocmd!
 	autocmd FileType * lua setExpandtab()
@@ -152,10 +176,4 @@ augroup END
 ]])
 
 require("anax.remap")
-
-
-
-
-
-
 

@@ -71,3 +71,9 @@ command! ANSI call s:baleia.once(bufnr('%'))
 vim.keymap.set("n", "<C-,>", function() changeFontSize(1) end, {silent = true})
 vim.keymap.set("n", "<C-.>", function() changeFontSize(-1) end, {silent = true})
 
+vim.keymap.set('n', "<C-S-Right>", ":vertical resize -1<CR>")
+vim.keymap.set('n', "<C-S-Left>", ":vertical resize +1<CR>")
+vim.keymap.set('n', "<C-S-Up>", ":resize -1<CR>")
+vim.keymap.set('n', "<C-S-Down>", ":resize +1<CR>")
+
+
