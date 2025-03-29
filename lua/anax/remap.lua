@@ -51,6 +51,9 @@ vim.keymap.set("n", "<leader>b", builtin.buffers, {})
 vim.keymap.set("n", "<A-Right>", "<C-w>w", {noremap = true, silent = true})
 vim.keymap.set("n", "<A-Left>", "<C-w>W", {noremap = true, silent = true})
 
+vim.keymap.set("n", "<S-Right>", ":bnext<CR>", {noremap = false, silent = true})
+vim.keymap.set("n", "<S-Left>", ":bprevious<CR>", {noremap = false, silent = true})
+
 vim.keymap.set("n", "<leader>t", ":ToggleTerm<CR>", {silent = true})
 vim.keymap.set("t", "<C-e>", "<C-\\><C-n>", {noremap = true, silent = true})
 vim.keymap.set("n", "<F5>", ":split<CR>:terminal<CR>arun.bat<CR><C-\\><C-n>", {silent = true})
@@ -75,5 +78,6 @@ vim.keymap.set('n', "<C-S-Right>", ":vertical resize -1<CR>")
 vim.keymap.set('n', "<C-S-Left>", ":vertical resize +1<CR>")
 vim.keymap.set('n', "<C-S-Up>", ":resize -1<CR>")
 vim.keymap.set('n', "<C-S-Down>", ":resize +1<CR>")
+vim.keymap.set('n', "<leader>n", ":noh<CR>")
 
 

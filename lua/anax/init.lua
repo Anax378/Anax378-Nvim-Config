@@ -1,7 +1,4 @@
-
-vim.opt.number = true
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
+vim.opt.number = true vim.opt.ignorecase = true vim.opt.smartcase = true
 print(563)
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
@@ -11,21 +8,21 @@ vim.opt.expandtab = false
 local lazy = {}
 function lazy.install(path)
   if not vim.loop.fs_stat(path) then
-    print('Installing lazy.nvim....')
-    vim.fn.system({
-      'git',
-      'clone',
-      '--filter=blob:none',
-      'https://github.com/folke/lazy.nvim.git',
-      '--branch=stable', -- latest stable release
-      path,
-    })
+	print('Installing lazy.nvim....')
+	vim.fn.system({
+	  'git',
+	  'clone',
+	  '--filter=blob:none',
+	  'https://github.com/folke/lazy.nvim.git',
+	  '--branch=stable', -- latest stable release
+	  path,
+	})
   end
 end
 
 function lazy.setup(plugins)
   if vim.g.plugins_ready then
-    return
+	return
   end
 
   -- You can "comment out" the line below after lazy.nvim is installed
@@ -62,7 +59,62 @@ lazy.setup({
 	{ "savq/melange-nvim" },
 	{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {}},
 	{ "m00qek/baleia.nvim", tag = 'v1.4.0' },
+	{ "nvim-lualine/lualine.nvim", dependencies = { 'nvim-tree/nvim-web-devicons' }},
+	{'romgrk/barbar.nvim',
+		dependencies = {'lewis6991/gitsigns.nvim','nvim-tree/nvim-web-devicons'},
+		init = function() vim.g.barbat_auto_setup = false end,
+		opts = {
+			-- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
+			-- animation = true,
+			-- insert_at_start = true,
+			-- …etc.
+		},
+		version = '^1.0.0', -- optional: only update when a new 1.x version is released
+	},
 })
+
+
+require('lualine').setup {
+  options = {
+	icons_enabled = true,
+	theme = 'auto',
+	component_separators = { left = '', right = ''},
+	section_separators = { left = '', right = ''},
+	disabled_filetypes = {
+	  statusline = {},
+	  winbar = {},
+	},
+	ignore_focus = {},
+	always_divide_middle = true,
+	always_show_tabline = true,
+	globalstatus = false,
+	refresh = {
+	  statusline = 100,
+	  tabline = 100,
+	  winbar = 100,
+	}
+  },
+  sections = {
+	lualine_a = {'mode'},
+	lualine_b = {'branch', 'diff', 'diagnostics'},
+	lualine_c = {'filename'},
+	lualine_x = {'encoding', 'fileformat', 'filetype'},
+	lualine_y = {'progress'},
+	lualine_z = {'location'}
+  },
+  inactive_sections = {
+	lualine_a = {},
+	lualine_b = {},
+	lualine_c = {'filename'},
+	lualine_x = {'location'},
+	lualine_y = {},
+	lualine_z = {}
+  },
+  tabline = {},
+  winbar = {},
+  inactive_winbar = {},
+  extensions = {}
+}
 
 require("ibl").setup({
 		indent = {char = "|"},
@@ -81,6 +133,20 @@ lsp_zero.configure("hls", {
 	root_dir = require("lspconfig.util").root_pattern("*.hs", "*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml", ".git")
 });
 
+lsp_zero.configure("metals", {
+	cmd = {"metals", ".--lsp"},
+	filetypes = {"scala", "sc"},
+	root_dir = require("lspconfig.util").root_pattern(".git", "build.sbt", "metals.json")
+});
+
+lsp_zero.configure("ocamllsp", {
+	cmd = {"ocamllsp"},
+	filetypes = {"ocaml", "ml"},
+	root_dir = require("lspconfig.util").root_pattern(".git", "shell.nix")
+});
+
+vim.env.PATH = vim.env.HOME .. "/.opam/default/bin:" .. vim.env.PATH
+
 lsp_zero.setup()
 
 require("mason").setup({})
@@ -96,34 +162,34 @@ local cmp = require('cmp')
 
 cmp.setup({
   sources = {
-    {name = 'nvim_lsp'},
+	{name = 'nvim_lsp'},
 	{name = 'buffer'},
   },
   mapping = {
-    ['<C-y>'] = cmp.mapping.confirm({select = false}),
-    ['<C-e>'] = cmp.mapping.abort(),
-    ['<Up>'] = cmp.mapping.select_prev_item({behavior = 'select'}),
-    ['<Down>'] = cmp.mapping.select_next_item({behavior = 'select'}),
+	['<C-y>'] = cmp.mapping.confirm({select = false}),
+	['<C-e>'] = cmp.mapping.abort(),
+	['<Up>'] = cmp.mapping.select_prev_item({behavior = 'select'}),
+	['<Down>'] = cmp.mapping.select_next_item({behavior = 'select'}),
 	['<Tab>'] = cmp.mapping.confirm({select = false}),
-    ['<C-p>'] = cmp.mapping(function()
-      if cmp.visible() then
-        cmp.select_prev_item({behavior = 'insert'})
-      else
-        cmp.complete()
-      end
-    end),
-    ['<C-n>'] = cmp.mapping(function()
-      if cmp.visible() then
-        cmp.select_next_item({behavior = 'insert'})
-      else
-        cmp.complete()
-      end
-    end),
+	['<C-p>'] = cmp.mapping(function()
+	  if cmp.visible() then
+		cmp.select_prev_item({behavior = 'insert'})
+	  else
+		cmp.complete()
+	  end
+	end),
+	['<C-n>'] = cmp.mapping(function()
+	  if cmp.visible() then
+		cmp.select_next_item({behavior = 'insert'})
+	  else
+		cmp.complete()
+	  end
+	end),
   },
   snippet = {
-    expand = function(args)
-      require('luasnip').lsp_expand(args.body)
-    end,
+	expand = function(args)
+	  require('luasnip').lsp_expand(args.body)
+	end,
   },
 
   preselect = 'item',
@@ -149,7 +215,7 @@ end
 local function setup_python_highlighting()
 	vim.cmd("syntax enable")
 
-    vim.cmd([[highlight PythonMember guifg=#744fc6]])
+	vim.cmd([[highlight PythonMember guifg=#744fc6]])
 	vim.cmd([[syntax match pythonMember "\.\w\+" ]])
 	vim.cmd([[highlight link pythonMember PythonMember]])
 
@@ -158,11 +224,12 @@ local function setup_python_highlighting()
 	vim.cmd([[highlight link pythonSelf PythonSelf]])
 end
 
-vim.api.nvim_create_autocmd("FileType", {
+vim.api.nvim_create_autocmd({"FileType", "BufReadPost", "BufWinEnter"}, {
 	pattern = "python",
 	callback = setup_python_highlighting,
 })
 
+vim.api.nvim_create_user_command("PythonSH", function() setup_python_highlighting() end, {desc = "setup custom python syntax highlighting"})
 
 vim.cmd(
 [[
