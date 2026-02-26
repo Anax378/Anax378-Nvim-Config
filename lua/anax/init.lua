@@ -5,6 +5,16 @@ vim.opt.shiftwidth = 4
 vim.opt.expandtab = false
 
 
+vim.filetype.add({
+	extension = {nts = "nts",},
+	filename = {
+		['.nts'] = {'nts', priority = math.huge},
+	},
+	pattern = {
+		['.*/nts'] = 'nts',
+	},
+})
+
 local lazy = {}
 function lazy.install(path)
   if not vim.loop.fs_stat(path) then
@@ -59,6 +69,7 @@ lazy.setup({
 	{ "savq/melange-nvim" },
 	{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {}},
 	{ "m00qek/baleia.nvim", tag = 'v1.4.0' },
+	{ 'RaafatTurki/hex.nvim' },
 	{ "nvim-lualine/lualine.nvim", dependencies = { 'nvim-tree/nvim-web-devicons' }},
 	{'romgrk/barbar.nvim',
 		dependencies = {'lewis6991/gitsigns.nvim','nvim-tree/nvim-web-devicons'},
@@ -71,6 +82,19 @@ lazy.setup({
 		},
 		version = '^1.0.0', -- optional: only update when a new 1.x version is released
 	},
+	{"nvim-orgmode/orgmode",
+	event = "VeryLazy",
+	ft = { 'org' },
+	config = function()
+		require('orgmode').setup({
+			org_agenda_files = {"~/orgfiles/**/*"},
+			org_default_notes_file = "~/orgfiles/refile.org",
+		})
+		require("nvim-treesitter.configs").setup({
+			ignore_install = {"org"},
+		})
+	end,
+	}
 })
 
 
@@ -130,13 +154,13 @@ end)
 lsp_zero.configure("hls", {
 	cmd = {"haskell-language-server-wrapper", "--lsp"},
 	filetypes={"haskell", "lhaskell"},
-	root_dir = require("lspconfig.util").root_pattern("*.hs", "*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml", ".git")
+	root_dir = require("lspconfig.util").root_pattern("*.hs", "*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml", ".git", "shell.nix")
 });
 
 lsp_zero.configure("metals", {
 	cmd = {"metals", ".--lsp"},
 	filetypes = {"scala", "sc"},
-	root_dir = require("lspconfig.util").root_pattern(".git", "build.sbt", "metals.json")
+	root_dir = require("lspconfig.util").root_pattern(".git", "build.sbt", "metals.json", "shell.nix")
 });
 
 lsp_zero.configure("ocamllsp", {
@@ -205,7 +229,7 @@ vim.cmd.colorscheme('melange')
 vim.api.nvim_exec('language en_US.utf8', true)
 
 function setExpandtab()
-	if vim.bo.filetype == "haskell" or vim.bo.filetype == "cabal" then
+	if vim.bo.filetype == "haskell" or vim.bo.filetype == "cabal" or vim.bo.filetype == "python"then
 		vim.o.expandtab = true
 	else
 		vim.o.expandtab = false
@@ -242,5 +266,30 @@ augroup END
 
 ]])
 
+vim.cmd [[
+syntax include @python syntax/python.vim
+syntax region pythonBlock start="@python" end="@end" contains=@python
+]]
+
+require('hex').setup()
+
+vim.g.markdown_fenced_languages = {
+	"python",
+	"java",
+	"haskell",
+	"scala",
+	"lua",
+	"sql",
+	"nts",
+	"prolog",
+	"c",
+}
+
+vim.lsp.handlers["window/logMessage"] = function() end
+vim.lsp.handlers["window/showMessage"] = function() end
+
+vim.cmd("TSEnable highlight")
+
+require("anax.nts")
 require("anax.remap")
 
